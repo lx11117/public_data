@@ -1,0 +1,258 @@
+-------------------------------------------------------------------------------------
+title:git常用命令  version:0.0.1  date:2017-04-10  author:lx_7
+-------------------------------------------------------------------------------------
+
+windows下载地址：https://git-for-windows.github.io/
+
+使用手册参考网址：https://git-scm.com/book/zh/v2
+
+git的底层是数据库，所有数据是以文件方式存储在隐藏的.git目录中
+
+工作区（working directory）就是电脑上能看到的目录；
+
+版本库（repository）就是工作区的隐藏目录.git。
+
+暂存区（stage）是git add和git commit之间的部分，git add提交的文件全部储存在stage里。
+
+master：默认开发分支　　 Head：默认开发分支
+
+origin：默认远程版本库　   Head^：Head的父提交
+
+ssh-keygen -t rsa -C "youremail@example.com" 创建SSH Key
+git config --list 查看设置信息
+
+1.创建版本库：
+
+	git clone <url>：克隆远程版本库（先创建远程仓库，在git clone到本地库）
+		git clone http[s]://example.com/path/to/repo.git/
+		git clone ssh://example.com/path/to/repo.git/ 或 git clone [user@]example.com:path/to/repo.git/
+		git clone git://example.com/path/to/repo.git/
+		git clone /opt/git/project.git 
+		git clone file:///opt/git/project.git
+		git clone ftp[s]://example.com/path/to/repo.git/
+		git clone rsync://example.com/path/to/repo.git/
+
+	git init：初始化本地版本库
+	
+	git init --bare <name.git>：创建裸库，只记录git历史提交信息，一般用于远程仓库
+
+2.git一般工作提交流程：
+
+	git branch：确定当前分支没问题
+
+	git status：查看文件修改状态（必要时git diff -- “file”查看具体文件修改内容）
+
+	git pull：拉取远程代码，注意是否有冲突（拉取不成功时，git stash缓存代码后在拉，git stash pop出缓存代码）
+
+	git add <file>：最好单个添加修改文件，防止多余文件添加进去
+
+	git commit -m “这里写描述”：把暂存区的所有内容提交到当前分支<一次性提交>
+
+	git push：推送到远程库
+
+3.撤销操作：
+	git reset --hard HEAD：撤销工作区中所有未提交文件的修改内容
+
+	git reset HEAD <file>：撤销git add已暂存的文件
+
+	git reset --hard commit_id：撤销commit日志，git log查看commit日志
+	
+	git reset --hard HEAD^：撤销上次提交的所有改动（--hard表示放弃所有本地改动，HEAD最近一个提交，HEAD^上一次提交）
+
+	git checkout HEAD <file>：撤销指定的未提交文件的修改内容
+
+	git checkout -- <file>:撤销对文件的修改
+
+	git revert <commit>：撤销指定的提交
+
+	git commit --amend：修改最后一次提交
+
+4.修改和提交：
+
+	git status：查看状态
+
+	git diff：查看变更内容
+
+	git add .：跟踪所有改动过的文件
+
+	git add <file>：跟踪指定的文件
+
+	git mv <old> <new>：文件改名
+
+	git rm <file>：删除文件
+
+	git rm --cached <file>：停止跟踪文件但不删除
+
+	git commit -m “commit message”：提交所有更新过的文件
+
+	git commit -am “commit message” ：将add和commit合为一步 
+
+	git commit --amend -m “commit message”：修改最后一次提交,合并上一次提交（用于反复修改）
+
+5. 比较
+	
+	git diff ：显示所有未添加至index的变更
+
+	git diff --cached  ： 显示所有已添加index但还未commit的变更
+
+	git diff HEAD^ ：比较与上一个版本的差异
+
+	git diff HEAD -- ./lib ：比较与HEAD版本lib目录的差异
+
+	git diff origin/master..master ：比较远程分支master上有本地分支master上没有的
+
+	git diff origin/master..master --stat ：只显示差异的文件，不显示具体内容
+
+   	git difftool xxx.c ：将某个文件的当前版本和代码库中的版本做比较
+   
+  	git difftool branch1 branch2 ：比较两个分支
+   
+　 	git difftool branch_name  xxx.c ：比较其他分支的文件,将某个文件的当前版本，和某个分支中这个文件的版本做比较
+
+6.查看提交历史：
+
+	git log：查看提交历史
+	
+	git log -1：显示1行日志 -n为n行
+
+	git log -p <file>：查看指定文件的提交历史
+	
+	git log --stat ：显示提交日志及相关变动文件
+
+	git log --graph --pretty=oneline --abbrev-commit:查看历史合并地图
+
+	git blame <file>：以列表方式查看指定文件的提交历史
+	
+	git grep "delete from" ：文件中搜索文本“delete from”
+	
+	git show dfb02e6e4f2f7b573337763e5c0013802e392818 ：显示某个提交的详细内容	
+	
+	git show dfb02 ：可只用commitid的前几位
+
+	git show HEAD^ ：显示HEAD的父（上一个版本）的提交日志 ^^为上两个版本 ^5为上5个版本
+	
+	git show v2.0 ：显示v2.0的日志及详细内容
+
+7.分支与标签：
+
+	切换：
+
+	git checkout -b <branch>：创建分支并切换到该分支
+
+	git checkout -b branch-name origin/branch-name：在本地创建和远程分支对应的分支并切换到该分支
+	
+	git checkout <branch/tag>：切换到指定分支或标签
+
+	分支：
+
+	git branch：显示所有本地分支
+	
+	git branch -r： 列出远程分支
+	
+	git branch -r -d origin/branch-name：删除远程分支
+	
+	git branch -a：列出本地分支和远程分支
+
+	git branch <new-branch>：创建新分支
+
+	git branch -m oldbranch newbranch：分支重命名
+
+	git branch -M oldbranch newbranch：分支强制重命名	
+
+	git branch -d <branch>：删除本地分支
+	
+	git branch -D <branch>：强制删除分支，不能删除当前checkout的分支
+
+	标签：
+
+	git tag：列出所有本地标签
+
+	git tag <tagname> -light：基于最新提交创建轻量标签
+
+	git tag -d <tagname>：删除标签
+
+	git tag -a "标签名" -m "注释内容" [9fbc3d0]:给指定提交添加标签，省略提交码则给当前提交添加标签	
+
+	git show <tagname>：可以看到说明文字
+	
+	git checkout [tagname]：切换到标签版本
+	
+8.合并与衍合：
+
+	git merge <branch>：快速合并指定分支到当前分支
+	
+	git merge --no-ff -m "merge with no-ff" <branch>:弃用快速合并(推荐)
+
+	git rebase <branch>：衍合指定分支到当前分支
+
+9.远程操作：
+
+	远程库：
+
+	git remote -v：查看远程版本库信息
+
+	git remote show <remote>：查看指定远程版本库信息
+
+	git remote add <remote> <url>：添加远程版本库
+	
+	git remote rm <remote>: 删除远程库
+	
+	git branch --set-upstream branch-name origin/branch-name:建立本地分支和远程分支的关联
+
+	获取远程库更新：
+
+	git fetch <remote>：从远程库获取代码
+	
+	git fetch <远程主机名> <分支名>:取回特定分支的更新
+	
+	拉取远程库代码：
+
+	git pull <remote> <branch>：拉取代码及合并
+	
+	git pull <远程库名> <远程分支名>:<本地分支名>:取回远程主机某个分支的更新，再与本地的指定分支合并
+	
+	推送到远程库:
+	
+	git push --all origin：推送所有分支
+	
+	git push <remote> <branch>：上传代码及合并
+
+	git push -u <remote> <branch>: 使用-u选项指定一个默认主机，这样后面就可以不加任何参数使用git push；
+
+	git push <remote> :<branch/tag-name>：删除远程分支或标签
+	
+	git push <remote> :refs/tags/<tagname>：删除远程标签
+
+	git push --tags：上传所有标签//默认情况下，git push命令不会将标签上传到远程服务器上
+
+10.储藏功能
+
+	git stash  或 git save "hello world" 保存进度 
+            
+  	git stash pop  恢复最近一个进度
+
+   	git stash pop stash@{num}。num 就是你要恢复的工作现场的编号 
+  
+  	git stash list   查看储藏内容
+
+   	git stash show stash@{0} --patch  显示某一个储藏区差异
+
+11.提交空文件夹
+
+  在空目录下创建.gitkeep文件。在该文件中写下如下内容(可选)：
+	# Ignore everything in this directory   
+	*   
+	# Except this file !.gitkeep 
+  在空目录下创建.gitignore文件。在该文件中写下如下内容(可选)：
+	# Ignore everything in this directory   
+	*   
+	# Except this file !.gitignore
+	
+  
+12.忽略文件	
+  	 .gitignore文件对其所在的目录及所在目录的全部子目录均有效
+	 	/<file-name>：内容直接写要忽略的文件或者文件夹
+   	不忽略文件	
+	要忽略的文件夹一定要结尾 /* ，否则不忽略规则将无法生效
+		/node_modules/*
+		!/node_modules/layer/:内容不忽略文件夹

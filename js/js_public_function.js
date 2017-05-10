@@ -64,3 +64,27 @@
 			element["on"+eType] = null;
 		}
 	}
+	
+	/**
+	 * - chrome为了安全考虑，设计的不支持js操作加入收藏夹，
+	 * - 火狐23之后开始废止window.sidebar因为不是w3c标注 https://bugzilla.mozilla.org/show_bug.cgi?id=691647
+	 * - document.all 判断IE不够靠谱，因为现在许多浏览器也实现了document.all吗，并且IE11以后(document.all)为falsy
+	 * - 参考 http://stackoverflow.com/questions/10033215/add-to-favorites-button
+	 * - IE 中typeof window.external.addFavorite 为'unknown' [http://www.xdarui.com/archives/203.html];
+	 */
+  	//定义加入收藏夹函数
+	function join_favorite(siteUrl, siteName){  
+		var siteUrl = siteUrl || window.location;
+		var siteName = siteName || document.title;
+		
+		if(window.external && 'addFavorite' in window.external){ // IE
+			window.external.addFavorite(siteUrl, siteName);
+		} else if(window.sidebar && window.sidebar.addPanel) { // Firefox23后被弃用
+			window.sidebar.addPanel(siteUrl, siteName);
+		} else if(window.opera && window.print) { // rel=sidebar，读取a链接的href，title 注：opera也转战webkit内核了
+			this.title = siteName;
+			return true;
+		} else { // webkit - safari/chrome
+			alert('浏览器不支持，请 ' + (navigator.userAgent.toLowerCase().indexOf('mac') != - 1 ? 'Command/Cmd' : 'CTRL') + ' + D 手动添加到收藏夹！');
+		}
+	}

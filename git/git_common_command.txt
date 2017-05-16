@@ -37,6 +37,7 @@ origin：默认远程版本库　   Head^：Head的父提交
 
 ssh-keygen -t rsa -C "youremail@example.com" 创建SSH Key
 git config --list 查看设置信息
+git config --global core.editor /d/gvim.exe 设置默认编辑器
 
 原理：
 
@@ -67,7 +68,7 @@ git config --list 查看设置信息
 
 	git status：查看文件修改状态（必要时git diff -- “file”查看具体文件修改内容）
 
-	git pull：拉取远程代码，注意是否有冲突（拉取不成功时，git stash缓存代码后在拉，git stash pop出缓存代码）
+	git pull：拉取远程代码再与本地的当前分支合并，注意是否有冲突（拉取不成功时，git stash缓存代码后在拉，git stash pop出缓存代码）
 
 	git add <file>：最好单个添加修改文件，防止多余文件添加进去
 
@@ -76,6 +77,7 @@ git config --list 查看设置信息
 	git push：推送到远程库
 
 3.撤销操作：
+
 	git reset --hard HEAD：撤销工作区中所有未提交文件的修改内容
 
 	git reset HEAD <file>：撤销git add已暂存的文件
@@ -207,8 +209,26 @@ git config --list 查看设置信息
 	git merge <branch>：快速合并指定分支到当前分支
 	
 	git merge --no-ff -m "merge with no-ff" <branch>:弃用快速合并(推荐)
+	
+	解决merge冲突：例如当前在dev分支，准备把master分支合并到dev分支时遇到冲突，解决步骤：
+
+			git merge --abort 中止冲突的合并
+
+			对于冲突的文件，选择使用哪个分支的代码：
+				git merge -X theirs master 使用master分支
+				git merge -X ours master 使用dev分支，也就是当前所在的分支
+				
+	
+	如果merge 没有发生冲突，git会自动合并，这时候会打开vim的编辑界面，提示你写提交说明：
+			
+			Merge branch 'master' into dev
+			# Please enter a commit message to explain why this merge is necessary,...
+
+		注意到第一行已经有一句提交说明了，如果没有要补充的就直接运行 :wq 保存并退出vim；
 
 	git rebase <branch>：衍合指定分支到当前分支
+	
+	git rebase -i HEAD~4:合并最近的5次提交，如果想中止操作，git rebase --abort
 
 9.远程操作：
 
@@ -233,6 +253,8 @@ git config --list 查看设置信息
 	拉取远程库代码：
 
 	git pull <remote> <branch>：拉取代码及合并
+	
+	git pull --all：拉取远程所有的分支
 	
 	git pull <远程库名> <远程分支名>:<本地分支名>:取回远程主机某个分支的更新，再与本地的指定分支合并
 	

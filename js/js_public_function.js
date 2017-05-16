@@ -88,3 +88,14 @@
 			alert('浏览器不支持，请 ' + (navigator.userAgent.toLowerCase().indexOf('mac') != - 1 ? 'Command/Cmd' : 'CTRL') + ' + D 手动添加到收藏夹！');
 		}
 	}
+	
+	// 获取url中的参数
+	function getUrlParam (name) {
+		 var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+		 var r = window.location.search.substr(1).match(reg);
+		 if (r!= null) {
+			return decodeURI(r[2]);
+		 }else{
+			return null;
+		 }
+	} 

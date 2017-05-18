@@ -1,10 +1,30 @@
 /**
  * @files 常用js函数
  * @description 
- *  version:0.0.1 
- *	date:2017-04-10
+ *  version:0.0.2 
+ *	date:2017-05-17
  *  author:lx_7
  */
+ 	
+	
+	//js批量注册事件,循环注册 或 采用委托的方式:
+	//所谓的委托就是将自己的事情委托给父元素处理，利用的是事件冒泡原理	
+	window.onload=function(){
+	  var obox=document.getElementById("box");
+	  var odiv=document.getElementById("show");
+	  obox.onclick=function(ev){
+		  //IE8及以下,事件处理函数中使用的事件对象是window.event
+		  //IE8+既可以使用window.event也可以使用传递的事件对象,不过火狐浏览器只能够使用传递的事件对象
+		var ev=window.event||ev;
+			//IE9+ event.target此事件属性可以返回触发事件的对象
+			// event.srcElement:此事件属性可以返回触发事件的对象的引用。
+			var target=ev.target||ev.srcElement;
+			//tagName属性返回元素的标签名称。返回值是大写形式。
+			if(target.tagName="LI"){
+			  odiv.innerHTML=target.innerHTML;
+		}
+	  }
+	}
 	
 	/**
 	 * @description js移除class

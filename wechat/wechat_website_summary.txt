@@ -13,4 +13,4 @@ title: 微信网站总结 tips  version:0.0.0 date:2017-05-18 author:lx_7
 	WeUI 是一个样式库，核心文件就是 weui.css，如果用于生产环境，建议使用官方提供的 CDN 或下载官方最新的 Releases 引入即可，CDN 地址可以在官方 Wiki 中找到，生产环境建议使用压缩后的 weui.min.css 。
 
 js:
-	1.click事件失灵 替换成 tap事件
+	1.jq click事件失灵 替换成 tap事件

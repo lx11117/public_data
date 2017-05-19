@@ -35,15 +35,26 @@ master：默认开发分支　　 Head：默认开发分支
 
 origin：默认远程版本库　   Head^：Head的父提交
 
+
 ssh-keygen -t rsa -C "youremail@example.com" 创建SSH Key
+
 git config --list 查看设置信息
+
 git config --global core.editor /d/gvim.exe 设置默认编辑器
+
 
 原理：
 
  本地一般流程：	工作区(修改文件) -> git add -> 暂存区 -> git commit -> 本地仓库 
 
  远程提交一般流程：本地仓库 -> git pull(在本地合并远程分支) -> git push(推送) -> 远程仓库
+
+目录：
+	
+	1.创建版本库	2.git一般工作提交流程	3.撤销操作	4.修改和提交	5.比较	6.查看提交历史	7.分支与标签	
+	
+	8.合并与衍合	9.远程操作	10.储藏功能	11.提交空文件夹	12.忽略文件	13.孤儿分支，开启新历史	14.源码编译git
+
 
 1.创建版本库：
 
@@ -56,7 +67,9 @@ git config --global core.editor /d/gvim.exe 设置默认编辑器
 		git clone ftp[s]://example.com/path/to/repo.git/
 		git clone rsync://example.com/path/to/repo.git/
 	
-	$ git clone <版本库的网址> <本地目录名>：克隆到指定目录
+	git clone -b 分支名 远端URL：克隆指定分支的文件
+	
+	git clone <版本库的网址> <本地目录名>：克隆到指定目录
 
 	git init：初始化本地版本库
 	
@@ -100,9 +113,15 @@ git config --global core.editor /d/gvim.exe 设置默认编辑器
 
 	git diff：查看变更内容
 
-	git add .：跟踪所有改动过的文件
+	git add .：跟踪所有改动过的文件,能添加当前目录及其子目录下新增或修改的文件， 不能添加兄弟目录下的文件
+	
+	git add -A .：添加所有改变的文件
+	
+	git add -A：表示添加所有内容,高版本的Git使用git add -A表示提交所有文件
 
 	git add <file>：跟踪指定的文件
+	
+	git add -u：表示添加编辑或者删除的文件，不包括新添加的文件
 
 	git mv <old> <new>：文件改名
 
@@ -116,7 +135,7 @@ git config --global core.editor /d/gvim.exe 设置默认编辑器
 
 	git commit --amend -m “commit message”：修改最后一次提交,合并上一次提交（用于反复修改）
 
-5. 比较
+5.比较
 	
 	git diff ：显示所有未添加至index的变更
 
@@ -284,6 +303,7 @@ git config --global core.editor /d/gvim.exe 设置默认编辑器
 
    	git stash show stash@{0} --patch  显示某一个储藏区差异
 
+
 11.提交空文件夹
 
   在空目录下创建.gitkeep文件。在该文件中写下如下内容(可选)：
@@ -296,10 +316,41 @@ git config --global core.editor /d/gvim.exe 设置默认编辑器
 	# Except this file !.gitignore
 	
   
-12.忽略文件	
+12.忽略文件
+	
   	 .gitignore文件对其所在的目录及所在目录的全部子目录均有效
 	 	/<file-name>：内容直接写要忽略的文件或者文件夹
    	不忽略文件	
 	要忽略的文件夹一定要结尾 /* ，否则不忽略规则将无法生效
 		/node_modules/*
 		!/node_modules/layer/:内容不忽略文件夹
+
+
+13.孤儿分支，开启新历史
+	
+	如果你想抛弃所有的git历史纪录，你可以创建一个孤儿分支，它不继承自任何父分支。而是重新开启一段git历史记录。 
+	
+	它不会丢失之前的文件，你只需要重新把它们commit一次。例如：
+	
+	git checkout --orpha gh-pages：上述命令创建了一个分支gh-pages。
+	
+	如果原始分支master是空的，那么gh-pages分支创建后，master分支将消失。如果master不空，那么不消失。
+
+
+14.源码编译git。遇到了一些问题，主要是依赖没安装完整（也能编译成功，但是缺少功能）。
+
+	要安装的依赖是：
+
+		zlib
+		openssl(--shared和-fPIC选项)
+		libcurl（--with-ssl）
+		expat
+		ascilldoc
+
+	把这些源码下载下来编译好，就行了。
+
+	要注意的是openssl要先于libcurl编译，因为libcurl在configure阶段需要开启--with-ssl选项来指明openssl的路径，否则就无法支持很好地https协议（git pull失败）。
+
+	另外openssl的configure阶段要使用--shared -fPIC选项使编译生成动态库（.so，默认是静态库.a），这样才能被libcurl调用。
+	
+	如果之前已经生成过静态库了，重新编译之前要sudo make clean一下。

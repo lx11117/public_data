@@ -1,5 +1,5 @@
 -------------------------------------------------------------------------------------
-title:git常用命令  version:0.0.3  date:2017-06-01  author:lx_7
+title:git常用命令  version:0.0.4  date:2017-06-06  author:lx_7
 -------------------------------------------------------------------------------------
 
 windows下载地址：https://git-for-windows.github.io/
@@ -58,6 +58,44 @@ Git Flow(分支模型)：
  
  主要分支每种类型只能有一个，派生分支每个类型可以同时存在多个。
 
+
+跨平台编程:	
+	
+	1.换行符,保证仓库永远换行符永远采用UNIX标准（LF），在Windows工作空间设置为Windows标准（CRLF），在Mac/Linux工作空间设置为Unxi标准（LF）。	
+	
+		1.1、设置换行符自动转换功能
+	
+			# Configure Git on OS X or Linux to properly handle line endings
+			git config --global core.autocrlf input
+
+			# Configure Git on Windows to properly handle line endings
+			git config --global core.autocrlf true
+
+		1.2、设置换行符检查功能
+
+			// 提交包含混合换行符的文件时给出警告
+			git config --global core.safecrlf warn
+	
+	2.换行符,一个团队需要使用同一的换行符标准（UNIX标准或者Windows标准），然后配置自己的代码编辑器和IDE，达到两项要求：
+
+    		在新建文件时默认使用团队统一的换行符标准；
+    		在打开文件时保持现有换行符格式不变（不要做自动转换）。
+	
+		1、关闭换行符自动转换功能
+
+			// 提交检出均不转换
+			git config --global core.autocrlf false
+
+		2、开启换行符检查功能（按照需求设置）
+
+			// 拒绝提交包含混合换行符的文件
+			git config --global core.safecrlf true   
+
+			// 允许提交包含混合换行符的文件
+			git config --global core.safecrlf false   
+
+			// 提交包含混合换行符的文件时给出警告
+			git config --global core.safecrlf warn
 
 
 原理：

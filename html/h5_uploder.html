@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+    <style>
+        fieldset {
+            width: 400px;
+            height: 150px;
+        }
+
+        .uploadImg {
+            width: 40px;
+            height: 40px;
+        }
+
+        a {
+            padding: 10px;
+            text-decoration: none;
+            border: 2px solid #e27b32;
+            position: relative;
+            top: 17px;
+            left: 24%;
+            color: #d46c6c;
+            border-radius: 18px;
+        }
+
+        .outputContain {
+            width: 400px;
+            height: 56px;
+            overflow-x: auto;
+            overflow-y: hidden;
+        }
+    </style>
+</head>
+<body>
+    <fieldset>
+        <legend>上传图片-获取图片</legend>
+        <div class="contain">
+            <form enctype="multipart/form-data" method="post" name="form">
+                <input type="file" id="file" name="file" multiple="multiple" />
+            </form>
+            <div id="progress"></div>
+            <div class="outputContain">
+                <div id="output"></div>
+            </div>
+            <a href="javascript:clear()">清空所有</a>
+            <a href="javascript:uploadFile()">上传文件</a>
+        </div>
+    </fieldset>
+
+
+    <a href="javascript:testReq()">测试请求</a>
+
+    <script>
+        'use strict'
+
+        var progressTip = document.getElementById('progress'),
+            outPutTip = document.getElementById('output'),
+            fileInput = document.getElementById('file');
+
+        //ajax+FormData上传文件
+        function uploadFile() {
+            var formData = new FormData(document.forms.namedItem('form'));
+            var needResult = 0;
+            formData.append('needResult', needResult);
+            var xhr = new XMLHttpRequest();
+            xhr.open('post', '/home/upload', true);
+            xhr.setRequestHeader('testHeader', 'testHeader');
+            xhr.timeout = 60 * 1000;
+            xhr.ontimeout = function (event) {
+                progressTip.innerHTML = '超时(60s)';
+            }
+
+            xhr.onload = function (event) {
+                progressTip.innerHTML = '上传完成';
+                if (this.status === 200) {
+                    //needResult == 1 && this.responseText.toString().split('|').forEach(function (url) {
+                    //    getImg(url);
+                    //});
+                } else {
+                    progressTip.innerHTML = 'error:状态码：' + this.status + ' 错误消息：' + this.statusText;
+                }
+            }
+
+            xhr.upload.onprogress = function (event) {
+                if (event.lengthComputable) {
+                    var pro = ((event.loaded / event.total).toFixed(4) * 100).toFixed(2);
+                    progressTip.innerHTML = '上传进度:' + pro + '%<br/>';
+                }
+            }
+
+            xhr.send(formData);
+        }
+
+        //ajax下载文件
+        function getImg(url) {
+            var xhr = new XMLHttpRequest();
+            xhr.open('get', url, true);
+            xhr.responseType = 'blob';
+            xhr.onload = function (e) {
+                if (this.status === 200) {
+                    getFileReaderResult(this.response, function (result) {
+                        appendImgToBox(result);
+                    });
+                } else {
+                    progressTip.innerHTML = '发生错误';
+                }
+            }
+            xhr.send();
+        }
+		
+		//压缩图片
+        function compressPicture(src){
+            var img = new Image();
+            img.src = src; // 要压缩的图片
+            
+            //计算压缩宽高
+            var maxWidth = 800,
+                maxHeight = 600,
+                sw = img.width,
+                sh = img.height,
+                tw = img.width,
+                th = img.height,
+                scale = (tw / th).toFixed(2);
+            
+            if (sw > maxWidth) {
+                    sw = maxWidth;
+                    sh = Math.round(sw / scale);
+            }
+               
+            if (sh > maxHeight) {
+                    sh = maxHeight;
+                    sw = Math.round(sh * scale);
+            }
+            
+            var canvas = document.createElement("canvas");
+            var ctx = canvas.getContext("2d");
+            canvas.width = sw;
+            canvas.height = sh;
+            //在canvas绘制前填充白色背景   
+            ctx.fillStyle = "#fff";   
+            ctx.fillRect(0, 0, canvas.width, canvas.height); 
+            //将图片画到canvas上面
+            ctx.drawImage(img, 0, 0, img.width, img.height, 0, 0, sw, sh );
+            //使用Canvas压缩
+            var dataURL = canvas.toDataURL("image/jpeg", 0.5);
+            return dataURL;
+        } 	
+		
+        //返回blog:图片链接的预览
+        function getFileUrl(file) {
+            var src = window.URL.createObjectURL(file);
+            return src || '';
+        }
+
+        //FileReader读取文件，返回base64的图片
+        function getFileReaderResult(blob, callback) {
+            var fileReader = new FileReader();
+            fileReader.readAsDataURL(blob);
+            fileReader.onprogress = function (event) {
+                if (event.lengthComputable) {
+                    var pro = ((event.loaded / event.total).toFixed(4) * 100).toFixed(2);
+                    progressTip.innerHTML = '预览进度:' + pro + '%<br/>';
+                }
+            }
+            fileReader.onloadend = function () {
+                progressTip.innerHTML = '预览完成';
+                typeof callback === 'function' && callback(this.result);
+            }
+        }
+
+        //添加一个预览图到预览列表里面
+        function appendImgToBox(src) {
+            outPutTip.innerHTML += '<image class="uploadImg" src="' + src + '"/>';
+            var imgCount = document.getElementsByClassName('uploadImg').length,
+                singleImgWidth = document.getElementsByClassName('uploadImg')[0].offsetWidth;
+            outPutTip.style.width = imgCount * singleImgWidth + 'px';
+        }
+
+        //重置页面
+        function clear() {
+            outPutTip.innerHTML = '';
+            outPutTip.style.width = '0px';
+            fileInput.value = '';
+        }
+
+        //选择文件后生产预览图
+        fileInput.addEventListener('change', function (e) {
+            for (var i = 0; i < e.target.files.length; i++) {
+                getFileReaderResult(e.target.files[i], function (result) {
+                    appendImgToBox(result);
+                });
+            }
+        });
+
+
+        function testReq() {
+            var xhr = new XMLHttpRequest();
+            xhr.open('post', '/home/add', true);
+            xhr.onprogress = function (e) {
+                console.log(e);
+            }
+            xhr.upload.onprogress = function (e) {
+                console.log(e);
+            }
+
+            xhr.onload = function () {
+                if (this.status == 200) {
+                    if (this.readyState == 4) {
+                        alert('完成');
+                    }
+                }
+            }
+            xhr.send();
+        }
+
+    </script>
+</body>
+</html>

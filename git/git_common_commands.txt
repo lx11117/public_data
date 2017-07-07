@@ -60,33 +60,18 @@ Git Flow(分支模型)：
 
 
 跨平台编程:	
-	
-	1.换行符,保证仓库永远换行符永远采用UNIX标准（LF），在Windows工作空间设置为Windows标准（CRLF），在Mac/Linux工作空间设置为Unxi标准（LF）。	
-	
-		1.1、设置换行符自动转换功能
-	
-			# Configure Git on OS X or Linux to properly handle line endings
-			git config --global core.autocrlf input
 
-			# Configure Git on Windows to properly handle line endings
-			git config --global core.autocrlf true
-
-		1.2、设置换行符检查功能
-
-			// 提交包含混合换行符的文件时给出警告
-			git config --global core.safecrlf warn
-	
-	2.换行符,一个团队需要使用同一的换行符标准（UNIX标准或者Windows标准），然后配置自己的代码编辑器和IDE，达到两项要求：
+	1.换行符,一个团队需要使用同一的换行符标准（UNIX标准[推荐]或者Windows标准），然后配置自己的代码编辑器和IDE，达到两项要求：
 
     		在新建文件时默认使用团队统一的换行符标准；
     		在打开文件时保持现有换行符格式不变（不要做自动转换）。
 	
-		1、关闭换行符自动转换功能
+		1.1、关闭换行符自动转换功能
 
 			// 提交检出均不转换
 			git config --global core.autocrlf false
 
-		2、开启换行符检查功能（按照需求设置）
+		1.2、开启换行符检查功能（按照需求设置）
 
 			// 拒绝提交包含混合换行符的文件
 			git config --global core.safecrlf true   
@@ -97,12 +82,59 @@ Git Flow(分支模型)：
 			// 提交包含混合换行符的文件时给出警告
 			git config --global core.safecrlf warn
 
+	
+	2.换行符,保证仓库永远换行符永远采用UNIX标准（LF），在Windows工作空间设置为Windows标准（CRLF），在Mac/Linux工作空间设置为Unxi标准（LF）。	
+	
+		2.1、设置换行符自动转换功能
+	
+			# Configure Git on OS X or Linux to properly handle line endings
+
+			//提交时转换为LF，检出时不转换
+			git config --global core.autocrlf input
+
+			# Configure Git on Windows to properly handle line endings
+
+			//提交时转换为LF，检出时转换为CRLF
+			git config --global core.autocrlf true
+
+		2.2、设置换行符检查功能
+
+			// 提交包含混合换行符的文件时给出警告
+			git config --global core.safecrlf warn
+
+
+	3.单一仓库的换行符局部配置,即时你已经进行了全局配置。 .gitattributes文件(通常位于仓库的根目录,需要提交才会生效)统一换行符。
+	
+			# Set the default behavior, in case people don't have core.autocrlf set.
+			# 采用git认为最好的方式来处理文件，未在.gitattributes中设置的项默认按照这种方式处理；
+			
+			* text=auto
+
+			# Explicitly declare text files you want to always be normalized and converted
+			# to native line endings on checkout.
+			*.c text
+			*.h text
+
+			# Declare files that will always have CRLF line endings on checkout.
+			# 在checkout时，转换Line Ending为crlf；
+
+			*.sln text eol=crlf
+
+			# Denote all files that are truly binary and should not be modified.
+			# 告诉git该文件为二进制，防止git修改该文件。binary和符号-text -diff是等价的。
+
+			*.png binary
+			*.jpg binary
+	
 
 原理：
 
  本地一般流程：	工作区(修改文件) -> git add -> 暂存区 -> git commit -> 本地仓库 -> git fetch(取回远程所有分支的更新,可取回特定分支更新)
 
  远程提交一般流程：本地仓库 -> git pull(在本地合并远程分支) -> git push(推送) -> 远程仓库
+
+ 远程库建立一般流程: git init --bare <name.git>(创建远程裸库) ->git remote add <remote> <url>(本地库添加远程库地址) -> git push --all(推送所有分支,不会推送tag标签)
+
 
 建议：
 	
@@ -112,11 +144,13 @@ Git Flow(分支模型)：
 
  不要在随机点合并上游代码， 也不要在随机点合并下游代码， 会产生随机垃圾。
 
+
 目录：
 	
 	1.创建版本库	2.git一般工作提交流程		3.撤销操作	4.修改和提交		5.比较		6.查看提交历史		7.分支与标签	
 	
 	8.合并与衍合	9.远程操作	10.储藏功能	11.提交空文件夹		12.忽略文件	13.孤儿分支，开启新历史		14.源码编译git
+
 
 
 1.创建版本库：

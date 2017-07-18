@@ -1,0 +1,35 @@
+---------------------------------------------------------------------------------------
+title:javascript编码规范 date: 2017-07-14 version: 0.0.0 author: lx_7
+---------------------------------------------------------------------------------------
+
+tips：
+
+	“对风格的挑刺毫无意义可言。它们必须是指导原则，且你必须遵循。”	–Rebecca Murphey
+
+	“成为一个优秀的成功项目管理者的一个条件是，明白按自己的偏好风格写代码是非常不好的做法。如果成千上万的人都在使用你的代码，那么请尽可能通俗易懂地写出你的代码，
+	
+	而非在规范之下自作聪明地使用自己偏好的风格。”	–Idan Gazit
+
+
+	真正的 JS标准现在还在讨论的没玩没了呢。
+
+
+	参考：https://github.com/airbnb/javascript ( airbnb [在github 目前赞最多] )
+	
+	      https://github.com/standard/standard ( Standard )
+	   
+  	      http://web.jobbole.com/88575/ ( 中文介绍Standard )
+          
+          https://github.com/usablica/intro.js ( intro )
+	      
+	      https://github.com/rwaldron/idiomatic.js/tree/master/translations/zh_CN ( Idiomatic.js )
+	
+	      https://contribute.jquery.org/style-guide/js/ ( jQuery )
+          
+          https://github.com/ecomfe/spec ( 百度EFE )
+		
+	      http://alloyteam.github.io/CodeGuide/ ( 腾讯AlloyTeam )
+		
+	     
+
+

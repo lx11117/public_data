@@ -7,11 +7,24 @@ title: node常用命令 date: 2017-07-11 version: 0.0.0 author: lx_7
 
 tips：
 
-    nvm：node多版本控制工具，参考：http://bubkoo.com/2017/01/08/quick-tip-multiple-versions-node-nvm/
-
+    nvm：node 多版本控制工具, 独立使用(需先安装 nvm，在安装 node)
+        
+         参考：http://bubkoo.com/2017/01/08/quick-tip-multiple-versions-node-nvm/
+               http://www.imooc.com/article/14617?block_id=tuijian_wz
+         官方：https://github.com/creationix/nvm
+         
+         
+    n: node 多版本控制工具, 基于 node 使用(需先安装 node，在安装 n)
+    
+         参考：http://zjzno1.github.io/2016/07/26/node%E4%B8%ADn%E7%9A%84%E4%BD%BF%E7%94%A8%E2%80%94%E2%80%94%E7%89%88%E6%9C%AC%E6%8E%A7%E5%88%B6/
+         官方：https://github.com/tj/n
+         
 
     npm：第一是npm这个开源的模块登记和管理系统，也就是这个站点：https://www.npmjs.com。第二个指的是 nodejs package manager 也就是nodejs的包管理工具。
-
+    
+         参考：http://www.ruanyifeng.com/blog/2016/10/npm_scripts.html (阮一峰)
+         官方：https://docs.npmjs.com/
+         
 
     nrm：就是 npm registry manager 也就是npm的镜像源管理工具,有时候国外资源太慢，那么我们可以用这个来切换镜像源。
 
@@ -117,20 +130,24 @@ npm安装模块：
 
         模块的依赖都被写入了package.json文件后，他人打开项目的根目录（项目开源、内部团队合作），使用npm install命令可以根据dependencies配置安装所有的依赖包
 
+        使用 npm init 创建 package.json 文件。加上 -f 或 --force 参数，强制创建默认参数文件。
+        
+    package.json字段：
 
-package.json字段：
 
+        1.name: package的名字（由于他会成为url的一部分，所以 non-url-safe 的字母不会通过，也不允许出现"."、"_"），最好先在http://registry.npmjs.org/上搜下你取的名字是否已经存在
 
-      1.name: package的名字（由于他会成为url的一部分，所以 non-url-safe 的字母不会通过，也不允许出现"."、"_"），最好先在http://registry.npmjs.org/上搜下你取的名字是否已经存在
+        2.version: package的版本，当package发生变化时，version也应该跟着一起变化，同时，你声明的版本需要通过semver的校验（semver可自行谷歌）
 
-      2.version: package的版本，当package发生变化时，version也应该跟着一起变化，同时，你声明的版本需要通过semver的校验（semver可自行谷歌）
+        3.dependencies: package的应用依赖模块，应用依赖模块会安装到当前模块的node_modules目录下
 
-      3.dependencies: package的应用依赖模块，应用依赖模块会安装到当前模块的node_modules目录下
+        4.devDependencies：package的开发依赖模块，即别人要在这个package上进行开发
 
-      4.devDependencies：package的开发依赖模块，即别人要在这个package上进行开发
-
-      5.其他：参见官网
-
+        5.其他：参见官网 
+        
+        参考：https://vxhly.github.io/2016/08/30/talk-package-json-on-npm/
+        
+    npm uninstall 用于卸载包。
 
 npm：node包管理器
 

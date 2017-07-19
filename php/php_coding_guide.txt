@@ -467,7 +467,7 @@ tips£º
             switch ($expr) {
                     case 0:
                         echo 'First case, with a break';
-                     break;
+                        break;
                     case 1:
                         echo 'Second case, which falls through';
                         // no break

@@ -1,0 +1,61 @@
+---------------------------------------------------------------------------------------
+title: nodejs tips date: 2017-07-20 version: 0.0.0 author: lx_7
+---------------------------------------------------------------------------------------
+
+1.循环异步
+
+    参考：http://blog.csdn.net/fangjian1204/article/details/50585073
+          https://juejin.im/entry/5891d7912f301e0069f3637f
+          https://www.zhihu.com/question/24847805
+          
+    1.forEach, Array.forEach 是同步(阻塞)的
+    
+        var fs = require('fs');
+        var files = ['a.txt', 'b.txt', 'c.txt'];
+
+        files.forEach(function(filename) {
+            fs.readFile(filename, 'utf-8', function(err, contents) {
+                console.log(filename + ': ' + contents);
+            });
+        });
+
+    2.闭包实现
+    
+        var arr=[1,2,3,4,5];
+        for(var i=0;i<arr.length;i++){
+            (function(i){
+                $.get('url',function(data){
+                    alert(arr[i]);
+                })
+            })(i);
+        }
+        
+    3.递归回调
+        var fs = require('fs');// 要处理的文件列表
+        var files = ['./test1.txt', './test2.txt'];
+
+        var result = [];
+        function myReadFile(files, callback){
+            if(files.length === 0){
+                callback(result);
+            }else{
+                var fileName = files.shift(); 
+                fs.readFile(fileName, function(err, data) {
+                    if (err) throw err;
+                    else{
+                        result.push(data);
+                        myReadFile(files, callback);              
+                    }        
+                });
+            }
+        }
+        
+        myReadFile(files, function(data){
+            for(var i in data){
+                console.log(data[i].toString());
+            }
+        });
+
+    
+    4.其它看参考，使用Promise，co, generator, async, ES2016
+    

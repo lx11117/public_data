@@ -1,0 +1,204 @@
+----------------------------------------------------------------------------------
+title: vim配置总结  version:0.0.1 date:2018-03-16 author:lx_7 
+----------------------------------------------------------------------------------
+
+1.配置文件
+
+	全局配置文件：在 linux 文件名是 .vimrc , 在 windows 下面是 _vimrc 。
+		
+		:echo $MYVIMRC		#显示 vimrc 的文件路径
+
+	配置自动生效:
+		命令行中
+			:source $vim/_vimrc	
+		配置文件中写入
+			autocmd! BufWritePost $VIM/_vimrc source %	"保存配置文件后配置自动生效,%为当前缓存文件
+
+2.字体
+	Linux/Unix 命令格式：set guifont=字体 +\+空格 + 字体大小	set guifont=Monospace\ 14
+	Windows/Mac 命令格式：set guifont=字体 + : + 字体大小		set guifont=Monospace:14
+	\转义空格,多个字体 , 隔开
+
+3.配色方案
+
+	在系统自带的vim中有个 colors 文件夹，里面存放的便是各种 colorscheme。
+
+	命令模式下输入 :hi[ghlight]	可以看到当前 vim 的着色风格
+	命令模式下输入 :sy[ntax]	可以看到当前语法加亮模式，当文档的文字与列表里的正则表达式匹配时，vim会给文字着色、应用缩进等等。
+
+	colorscheme desert	"设置配色方案
+	也可以colorscheme命令写进.vimrc自动加载
+
+	color文件的格式：
+
+		以 " 开头的行为注释行
+		highlight clear	"清除所有颜色设定
+		let g:colors_name = '<name>'	"设定颜色风格的名字
+
+		颜色设定表：
+			highlight <组名> <Key>=<Args>
+			highlight <组名> <Key>=<Args>
+			...
+		组名是用:highlight命令显示的最左一列，属于这一组的文字会用设定的方式着色
+		Key可以是:
+			term(普通控制台)/cterm(高级控制台，有着色等功能)/gui
+			ctermfg(cterm前景色)/ctermbg(cterm背景色)等
+		Args可以是:
+			bold/none/underline/italic/inverse/reverse
+			或者是颜色代码：
+			cterm用1-7代表预定义的7种颜色，如果文字被加上了bold属性，以高亮颜色显示
+			gui可以用颜色名或RGB码标示颜色
+		例子：
+			highlight Statement ctermfg=3 cterm=bold guifg=#c0c000 gui=bold
+
+	有设置 colorscheme 配色方案，自定义颜色设置放在 vimrc 文件末尾才能生效。
+
+4.语法
+	参考:
+		https://www.w3cschool.cn/vim/6ise1hsz.html
+		https://www.jianshu.com/p/5f298fdcfd55
+		https://kenvifire.gitbooks.io/vimscript/content/about.html
+
+	"string		# " 符号后面为注释内容, ":map"，":abbreviate"，":execute" 和 "!" 命令之后不能有注释。
+
+	\ 		#续行
+
+	let 		#关键字为变量赋值
+	
+	unlet		#删除变量
+	
+	|		#用来将两个命令分隔开,对于一些命令，直到行尾或者 '|'字符为止的内容都是有效的。
+
+	!		#执行shell外部命令
+	
+
+	$varname        #环境变量
+
+        &varname        #选项
+
+        @varname        #寄存器
+	
+	&l:varname	#本地变量(局部变量)
+
+	&g:varname	#全局变量
+
+	
+	g: varname	#变量为全局变量
+	
+s: varname	#变量的范围为当前的脚本文件
+
+	w: varname	#变量的范围为当前的编辑器窗口
+	
+t: varname	#变量的范围为当前的编辑器选项卡
+	
+b: varname	#变量的范围为当前的编辑器缓冲区
+
+	l: varname	#变量的范围为当前的函数
+	
+a: varname	#变量是当前函数的一个参数
+
+	v: varname	#变量是 Vim 的预定义变量
+
+	:echo string	#输出(显示一次)
+	:echom string	#输出（输出会出现在消息列表里）
+	:messages	#查看消息列表
+	:set number!	#布尔型配置项前加“!"可以对该项的当前值取反
+	:set number?	#可以通过使用“?”来向Vim查询对应选项的值
+
+	条件语句：
+		 a ? b : c
+		
+		if {condition}
+           		{statements}
+		elseif {condition}
+        	else
+           		{statements}
+        	endif
+
+		while  {condition}
+			{statements}
+		endwhile 
+		
+		for {varname} in {listexpression}
+    			{statements}
+		endfor
+
+	表达式:
+		execute 命令只能用来执行冒号命令
+		normal 命令可以用来执行普通模式命令。然而，它的参数只能是按表面意义解释的命令字符，不能是表达式。
+		如果你不想执行字符串，而想执行它作为表达式计算的结果，可以用 eval() 函数。
+
+		execute "normal " . normal_commands
+		let optname = "path"
+        	let optval = eval('&' . optname)
+	
+	函数:
+		函数名必须以大写字母开始
+
+		function {name}({var1}, {var2}, ...)
+         		{body}
+        	endfunction
+
+		function!  Min(num1, num2, num3)	#重定义一个已经存在的函数
+		endfunction
+		
+		"call" 命令可以带一个行表示的范围。
+
+		function Count_words() range	#"range" 关键字时，表示它会自行处理该范围
+						#它传递两个参数: "a:firstline" 和 "a:lastline"，用来表示该范围所包括的第一行和最后一行
+		endfunction
+		
+		:10,30 call Count_words()	#执行一次,不给出 "range" 关键字折每行执行一次函数。
+
+		function Show(start, ...)	#...表示可变参数,最多20个。
+			a:0 > 1			#变量 "a:0" 表示这些参数的个数。
+			a:1 > 1			#变量 "a:1" 表示第一个可选的参数，"a:2" 表示第二个，如此类推。	
+		endfunction
+
+		delfunction Show		#删除 Show() 函数,如果该函数不存在，你会得到一个错误信息。
+
+		let tmp = tempname()
+        	try
+      			exe ".,$write " . tmp
+        		exe "!filter " . tmp
+        		.,$delete
+        		exe "$read " . tmp
+        	finally
+        		call delete(tmp)
+        	endtry
+
+5.按键映射
+	let mapleader=" "	|"设置<leader>,全局生效
+	let maplocalleader="-"	|"设置<localleader>,文件类型插件生效
+
+6.外部shell
+	:sh
+	:shell
+	:!		#! 通常和非交互式命令结合使用。 
+	:read textfile 	#读取文件内容
+	:read ! ls | sort #读取shell命令输出
+	:set shell ?	#查看vim默认的shell
+	:set shell=/path/to/shell	#设置使用的shell
+
+7.自动命令
+
+	编辑事件:
+		对话开始和清理事件，文件读取事件，文件编辑事件，缓冲区修改事件，选项设置事件，窗口相关事件，用户交互事件，以及异步通知
+
+		 :help autocmd-events		#查看此类事件的全部清单
+		 :help autocmd-events-abc	#查看各个事件的详细描述
+
+	常用的语法:
+		autocmd  EventName  filename_pattern   :command
+
+		命令开始处的冒号是可选的，但是最好加上；这么做能够让命令更轻松地在一个（往往很复杂的） autocmd 参数清单中定位。
+		
+		augroup	groupName
+			autocmd!
+			autocmd ....
+			...
+		augroup END
+	
+	不显示消息:
+		sil[ent][!] {command}			#静默执行,有"!"时错误消息也不显示
+		unsil[ent] {command}			#取消静默执行

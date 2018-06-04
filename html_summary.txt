@@ -1,0 +1,14 @@
+---------------------------------------------------------------------------------------
+title: html总结 date: 2018-04-16 version: 0.0.0 author: lx_7
+---------------------------------------------------------------------------------------
+
+1.底部版权信息
+	
+	Copyright [dates] by [author/owner]
+
+	?1995-2004 Macromedia, Inc. All rights reserved.
+	?2004 Microsoft Corporation. All rights reserved.
+	Copyright ? 2004 Adobe Systems Incorporated. All rights reserved.
+	?1995-2004 Eric A. and Kathryn S. Meyer. All Rights Reserved.
+	
+	tips: html 中 &copy; 表示 ?

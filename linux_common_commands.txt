@@ -1,9 +1,39 @@
 --------------------------------------------------------------------------
-title: vim常用命令  version:0.0.0 date:2017-05-13 author:lx_7
+title: linux常用命令  version:0.0.1 date:2018-04-19 author:lx_7
 --------------------------------------------------------------------------
 
+服务
+	chkconfig:
+		chkconfig --level 3 httpd on	#使某服务自动启动
+		chkconfig --level 3 httpd off	#使某服务不自动启动
+		chkconfig --list		#显示所有已启动的服务
+		service httpd status		#检查服务状态
+		service httpd start		#启动某服务
+		service httpd stop		#停止某服务
+		service httpd restart		#重启某服务
+	systemctl:
+		systemctl enable httpd.service	#使某服务自动启动
+		systemctl disable httpd.service	#使某服务不自动启动
+		systemctl status httpd.service 	#检查服务状态（服务详细信息）
+		systemctl is-active httpd.service	#检查服务状态（仅显示是否 Active)
+		systemctl list-units --type=service	#显示所有已启动的服务
+		systemctl list-units-file		#显示所有的服务
+		systemctl start httpd.service		#启动某服务
+		systemctl stop httpd.service		#停止某服务
+		systemctl restart httpd.service		#重启某服务
+		systemctl daemon-reload			#刷新配置
+
+	ps -A|grep mysql	#查看运行中匹配mysql的进程
+	ps -ef 			#查看运行程序权限
+
+shell 
+
+	$ cat /etc/shells	//查看可使用的shells
+	$ env | grep SHELL	//环境变量中shell的匹配查找
+
 系统信息
- 
+
+ 	lsb_release -a	#查看系统版本信息
 	arch 显示机器的处理器架构(1) 
 	uname -m 显示机器的处理器架构(2) 
 	uname -r 显示正在使用的内核版本 
@@ -52,6 +82,7 @@ title: vim常用命令  version:0.0.0 date:2017-05-13 author:lx_7
 	ls 查看目录中的文件 
 	ls -F 查看目录中的文件 
 	ls -l 显示文件和目录的详细资料 
+	ls -lrt 	#显示文件和目录的详细资料按时间反向排序
 	ls -a 显示隐藏文件 
 	ls *[0-9]* 显示包含数字的文件名和目录名 
 	tree 显示文件和目录由根目录开始的树形结构(1) 
@@ -106,7 +137,8 @@ title: vim常用命令  version:0.0.0 date:2017-05-13 author:lx_7
 	mount -o loop file.iso /mnt/cdrom 挂载一个文件或ISO镜像文件 
 	mount -t vfat /dev/hda5 /mnt/hda5 挂载一个Windows FAT32文件系统 
 	mount /dev/sda1 /mnt/usbdisk 挂载一个usb 捷盘或闪存设备 
-	mount -t smbfs -o username=user,password=pass //WinClient/share /mnt/share 挂载一个windows网络共享 
+	mount -t smbfs -o username=user,password=pass //WinClient/share /mnt/share 挂载一个windows网络共享
+	mount.cifs -o username=windowsUser //ip/share /mnt/share 挂载一个windows网络共享文件夹(确保有cifs类型,否则 apt-get install cifs-utils)
 
 
 
@@ -123,6 +155,13 @@ title: vim常用命令  version:0.0.0 date:2017-05-13 author:lx_7
 
 用户和群组 
 
+	/etc/group	#文件包含所有组
+	/etc/passwd	#文件包含系统存在的所有用户名
+	/etc/shadow	#文件包含系统存在的所有用户名
+	
+	# passwd --stdin user	#从标准输入中读取密码
+	# echo "123456" | passwd --stdin root	#密码同时含有单引号和双引号，那么则无法通过这种方法修改。
+
 	groupadd group_name 创建一个新用户组 
 	groupdel group_name 删除一个用户组 
 	groupmod -n new_group_name old_group_name 重命名一个用户组 
@@ -130,7 +169,7 @@ title: vim常用命令  version:0.0.0 date:2017-05-13 author:lx_7
 	useradd user1 创建一个新用户 
 	userdel -r user1 删除一个用户 ( '-r' 排除主目录) 
 	usermod -c "User FTP" -g system -d /ftp/user1 -s /bin/nologin user1 修改用户属性 
-	passwd 修改口令 
+	passwd 修改口令
 	passwd user1 修改一个用户的口令 (只允许root执行) 
 	chage -E 2005-12-31 user1 设置用户口令的失效期限 
 	pwck 检查 '/etc/passwd' 的文件格式和语法修正以及存在的用户 
@@ -143,12 +182,16 @@ title: vim常用命令  version:0.0.0 date:2017-05-13 author:lx_7
 
 	ls -lh 显示权限 
 	ls /tmp | pr -T5 -W$COLUMNS 将终端划分成5栏显示 
+	chmod 777 -R directory1	#设置目录及其子目录的所有人(u)、群组(g)以及其他人(o) 读、写、执行权限
+	chmod a+rwx directory1	#设置目录及其子目录的所有人(u)、群组(g)以及其他人(o) 读、写、执行权限
 	chmod ugo+rwx directory1 设置目录的所有人(u)、群组(g)以及其他人(o)以读（r ）、写(w)和执行(x)的权限 
 	chmod go-rwx directory1 删除群组(g)与其他人(o)对目录的读写执行权限 
+	
 	chown user1 file1 改变一个文件的所有人属性 
 	chown -R user1 directory1 改变一个目录的所有人属性并同时改变改目录下所有文件的属性 
-	chgrp group1 file1 改变文件的群组 
 	chown user1:group1 file1 改变一个文件的所有人和群组属性 
+	chgrp group1 file1 改变文件的群组 
+
 	find / -perm -u+s 罗列一个系统中所有使用了SUID控制的文件 
 	chmod u+s /bin/file1 设置一个二进制文件的 SUID 位 - 运行该文件的用户也被赋予和所有者同样的权限 
 	chmod u-s /bin/file1 禁用一个二进制文件的 SUID位 
@@ -231,16 +274,25 @@ RPM 包 - （Fedora, Redhat及类似系统）
 
 YUM 软件包升级器 - （Fedora, RedHat及类似系统） 
 
+	换源：
+		mv /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo.backup
+		wget /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo	#下载和自己操作系统版本对应的yum源
+		或 curl -o /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo
+		yum makecache
+		vim /etc/yum.repos.d/CentOS-Base.repo		#查看baseurl是否已换
+
+	yum list		#列出当前源中提供的安装包
+	yum list installed	#列出当前系统已安装的包
 	yum install package_name 下载并安装一个rpm包 
 	yum localinstall package_name.rpm 将安装一个rpm包，使用你自己的软件仓库为你解决所有依赖关系 
 	yum update package_name.rpm 更新当前系统中所有安装的rpm包 
 	yum update package_name 更新一个rpm包 
 	yum remove package_name 删除一个rpm包 
-	yum list 列出当前系统中安装的所有包 
 	yum search package_name 在rpm仓库中搜寻软件包 
 	yum clean packages 清理rpm缓存删除下载的包 
 	yum clean headers 删除所有头文件 
 	yum clean all 删除所有缓存的包和头文件 
+	yum makecache	#生成缓存
 
 返回顶部索引 ^
 
@@ -400,7 +452,7 @@ SWAP文件系统
 返回顶部索引 ^
 
 网络 - （以太网和WIFI无线） 
-
+	
 	ifconfig eth0 显示一个以太网卡的配置 
 	ifup eth0 启用一个 'eth0' 网络设备 
 	ifdown eth0 禁用一个 'eth0' 网络设备 
@@ -419,7 +471,8 @@ SWAP文件系统
 	mii-tool eth0 show link status of 'eth0' 
 	ethtool eth0 show statistics of network card 'eth0' 
 	netstat -tup show all active network connections and their PID 
-	netstat -tupl show all network services listening on the system and their PID 
+	netstat -tupl show all network services listening on the system and their PID
+	netstat -apn	#显示程序端口占用
 	tcpdump tcp port 80 show all HTTP traffic 
 	iwlist scan show wireless networks 
 	iwconfig eth1 show configuration of a wireless network card 

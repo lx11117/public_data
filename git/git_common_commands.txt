@@ -312,6 +312,8 @@ Git Flow(分支模型)：
 
 	git tag <tagname> -light：基于最新提交创建轻量标签
 
+	git tag -f <tagname>：覆盖原有的标签
+
 	git tag -d <tagname>：删除标签
 
 	git tag -a "标签名" -m "注释内容" [9fbc3d0]:给指定提交添加标签，省略提交码则给当前提交添加标签	

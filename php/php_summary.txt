@@ -1,0 +1,47 @@
+------------------------------------------------------------------------------------
+title: php总结  version:0.0.0 date:2018-03-23 author:lx_7
+------------------------------------------------------------------------------------
+
+ 1.批量更新
+	
+	当php文件执行时间过长时，服务器会终止该文件的执行，所以我们要么更改 php.ini 配置，要么在文件开头加上下列代码：
+
+		header("content-type:text/html;charset=utf-8");	//设置编码格式
+		set_time_limit(0);         //取消脚本执行延时上限
+　　		ignore_user_abort(TRUE); //如果客户端断开连接，不会引起脚本abort
+	
+	mysql批更新:
+		
+		1.对重复的记录先 delete 后 insert，如果更新的字段不全会将缺失的字段置为缺省值。
+		
+			replace into test_tbl (id,dr) values (1,'2'),(2,'3'),...(x,'y');
+	
+		2.出现重复值的行执行 UPDATE；如果不会导致唯一值列重复的问题，则插入新行。
+
+			insert into test_tbl (id,dr) values (1,'2'),(2,'3'),...(x,'y') on duplicate key update dr=values(dr);
+		
+		3.写入文件，用LOAD DATA INFILE导入，创建临时表，先更新临时表，然后从临时表中 update。
+
+			参考：https://blog.csdn.net/u014082714/article/details/53173975
+
+			function write_tmp_infile($values,$file_tmp){
+   				$fp = fopen("$file_tmp","a+");  
+   				$col ="\t"."$values[0]"."\t"."$values[1]"."\t"."$values[2]"."\\n\r\n"; //记录赋值   
+   				fwrite($fp, $col, strlen($col)); //插入第一条记录   
+   				fclose($fp); //关闭文件
+			}  
+			
+			LOAD DATA INFILE 'myfile.txt' INTO TABLE user_tmp character set utf8
+		
+			create temporary table tmp(id int(4) primary key,dr varchar(50));
+			insert into tmp values  (0,'gone'), (1,'xx'),...(m,'yy');
+			update test_tbl, tmp set test_tbl.dr=tmp.dr where test_tbl.id=tmp.id;
+		
+		4.
+			UPDATE yoiurtable
+    				SET dingdan = CASE id 
+        				WHEN 1 THEN 3 
+        				WHEN 2 THEN 4 
+        				WHEN 3 THEN 5 
+    				END
+			WHERE id IN (1,2,3)

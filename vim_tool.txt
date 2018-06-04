@@ -1,0 +1,53 @@
+----------------------------------------------------------------------------------
+title: vim工具  version:0.0.1 date:2018-03-01 author:lx_7 
+----------------------------------------------------------------------------------
+
+1.vim安装
+
+	官网：https://www.vim.org/download.php
+	全局配置文件：在linux文件名是 .vimrc , 在windows下面是 _vimrc
+
+2.vim插件
+
+	2.1 Vundle 插件管理器
+		
+		https://github.com/VundleVim/Vundle.vim
+		
+		vim配置文件(windows)添加：
+			
+			"插件管理
+			set rtp+=$VIM\vimfiles\bundle\Vundle.vim\
+			call vundle#begin('$VIM/vimfiles/bundle/')
+			"begin后为插件安装地址
+			Plugin 'VundleVim/Vundle.vim'
+			call vundle#end()
+			filetype plugin indent on
+		
+		添加插件：
+
+			在配置文件 call vundle#begin 后添加 Plugin 插件地址或插件名称 
+			在vim中运行 :BundleInstall
+
+		添加格式：
+
+			Plugin 'path'
+
+			其中，path的格式分为三种：
+
+				第一种是github仓库中的插件，安装时可以省略github域名。例如github.com/scrooloose/nerdtree ，可以写为'/scrooloose/nerdtree'。
+				第二种是虽然在github仓库中，却是在非git仓库中的插件，这时就需要传入合适的参数，例如github.com/rstacruz/sparkup 仓库中，Vim插件在该仓库的vim文件夹中，这时的格式					为：'rstacruz/sparkup', {'rtp': 'vim/'}。这一功能也可以用来安装不同版本的同一插件，例如''ascenator/L9', {'name': 'newL9'}'。
+				第三种是位于vim官方插件列表中的插件，也就是github.com/vim-scripts 中的插件，这部分可以直接输入插件名。例如github.com/vim-scripts/L9 ，可以直接写为'L9'
+				第四种是不在github上的git插件，此时要使用git前缀，并写全仓库名称和地址，例如：'git://git.example.com/example.git'
+				第五种是本地插件，此时使用file前缀，并写上绝对路径，例如：'file:///User/me/path/to/plugin'
+
+		使用(vim中命令):
+
+			:BundleInstall	#安装插件
+			:BundleUpdate	#更新插件
+			:BundleClean	#清除不再使用的插件
+			:BundleList	#列出所有插件
+			:BundleSearch	#查找插件
+
+	2.2 YouCompleteMe 自动补全
+		
+		https://github.com/Valloric/YouCompleteMe

@@ -1,0 +1,22 @@
+----------------------------------------------------------------------------------
+title: 插件总结  version:0.0.1 date:2018-05-31 author:lx_7 
+----------------------------------------------------------------------------------
+
+1.轮播插件
+	
+	https://github.com/idiot/unslider
+	http://www.bootcss.com/p/unslider/
+	
+
+2.日历插件
+
+	https://github.com/amsul/pickadate.js
+	http://amsul.ca/pickadate.js/date/
+
+3.文字滚动、跑马灯插件
+
+	https://github.com/aamirafridi/jQuery.Marquee
+
+3.javascript 哈希库（Trend Micro Locality Sensitive Hash）
+	
+	https://github.com/idealista/tlsh-js

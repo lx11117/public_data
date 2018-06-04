@@ -3,7 +3,7 @@ title: 微信网站总结 tips  version:0.0.0 date:2017-07-03 author:lx_7
 --------------------------------------------------------------------------
 
 辅助：
-	
+	微信调试工具 https://mp.weixin.qq.com/debug/wxadoc/dev/devtools/download.html
 	微信公众平台技术文档 https://mp.weixin.qq.com/wiki
 	
 	WeUI 官方 Github：https://github.com/weui/weui
@@ -17,8 +17,10 @@ tips:
 
 	1.不能使用支付宝支付
 
-	2.jq文件引用2次,调click事件时会触发2次事件
+	2.jq 文件引用2次,调 click 事件时会触发2次事件
+    
+    3.input css 设置了 -webkit-user-select:none; 属性禁止选中内容 ios 中将导致无法显示光标及输入
 
 
 js:
-	1.jq click事件失灵 替换成 tap事件
+	1.jq click 事件失灵 替换成 tap 事件

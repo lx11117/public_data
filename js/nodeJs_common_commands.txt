@@ -7,6 +7,10 @@ title: node常用命令 date: 2017-07-11 version: 0.0.0 author: lx_7
 
 tips：
 
+    node调试：
+
+	 参考：http://www.ruanyifeng.com/blog/2018/03/node-debugger.html
+
     nvm：node 多版本控制工具, 独立使用(需先安装 nvm，在安装 node)
         
          参考：http://bubkoo.com/2017/01/08/quick-tip-multiple-versions-node-nvm/
@@ -50,6 +54,13 @@ tips：
            参考：https://github.com/nodejh/nodejh.github.io/issues/39
            官方：https://github.com/electron/electron/tree/master/docs-translations/zh-CN
 
+    pm2：是一个带有负载均衡功能的Node应用的进程管理器,挂了自动重启。
+
+	参考: https://github.com/Unitech/pm2#usagefeatures
+
+	$ npm install -g pm2			#全局安装pm2
+	$ pm2 start app.js --name my-api	#命名进程my-api,独立进程运行
+	$ pm2 start app.js -i 4 --name my-api 	#命名进程my-api,开启四个进程运行
 
 安装完成后，在Windows环境下，请打开命令提示符，然后输入node -v，如果安装正常，你应该看到v7.6.0这样的输出：
 
@@ -112,6 +123,13 @@ Node模块的安装过程：
 
     npm install --cache-min 9999999 <package-name> / npm install --cache-min Infinity <package-name>    #从缓存目录安装模块,只有超过这个时间的模块，才会从 registry 下载。
 
+node项目： 
+	
+	package.json文件可以手工编写，也可以使用npm init命令自动生成。
+
+	有了package.json文件，直接使用npm install命令，就会在当前目录中安装所需要的模块。
+	
+	运行 node hello.js 启动项目
 
 npm安装模块：
 

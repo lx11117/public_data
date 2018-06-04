@@ -1,0 +1,20 @@
+----------------------------------------------------------------------------------
+title: 工具软件  version:0.0.1 date:2018-02-23 author:lx_7 
+----------------------------------------------------------------------------------
+
+1.usb启动制作工具
+	
+	UNetbootin: http://unetbootin.github.io  跨平台
+
+2.加密工具
+
+	加密工具比较: https://wiki.archlinux.org/index.php/Disk_encryption#Comparison_table
+
+	VeraCrypt: https://veracrypt.codeplex.com  跨平台、加密盘
+	dm-crypt: 是 Linux 内核提供的一个磁盘加密功能，而“cryptsetup”是一个命令行的前端（通过它来操作“dm-crypt”）。
+
+3.网盘
+	tips: edu教育邮箱会有更多优惠,https://medium.com/cheats/edu-email-signup-and-resource-b2132bb74580
+	google drive: https://www.google.com/drive/ 免费15G
+	dropbox: https://www.dropbox.com 免费2G可扩容到18G,免费扩容方式：https://www.dropbox.com/getspace
+

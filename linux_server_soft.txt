@@ -1,0 +1,194 @@
+----------------------------------------------------------------------------------
+title: linux服务器工具软件  version:0.0.1 date:2018-04-03 author:lx_7 
+----------------------------------------------------------------------------------
+
+#lsb_release -a		//查看系统版本信息
+
+1.vsftpd
+
+	port: 20/21
+
+	简介: ftp
+	
+	安装:
+		# yum  install  vsftpd
+		# service vsftpd start			//服务开启
+		# chkconfig --level 35 vsftpd on	//开机自启动, centos>=7 使用 systemctl enable vsftpd
+
+	配置:
+		策略1: 所有用户限制在home目录, 
+
+		  # vi /etc/vsftpd/vsftpd.conf
+			anonymous_enable=NO		//关闭匿名用户登陆
+
+			chroot_local_user=YES		//设置所有用户都不能离开home目录
+			allow_writeable_chroot=YES	//限制在home目录后,home目录允许写入,在 chroot_local_user=YES 后追加
+
+		  对个别用户开启特权:
+
+			chroot_list_enable=YES
+			chroot_list_file=/etc/vsftpd.chroot_list
+
+			/etc/vsftpd.chroot_list 中添加特权用户，格式为每个用户一行，在此文件里的用户不受权限约束。
+
+		  ftp用户策略允许登录ftp的系统用户:
+
+			在userlist_enable=YES文件后面添加
+				userlist_deny=NO
+				userlist_file=/etc/vsftpd/user_list
+
+			只有user_list中存在的用户才能登录系统,格式为每个用户一行
+
+
+		策略2: 指定用户限制在home目录, 
+
+		  # vi /etc/vsftpd/vsftpd.conf
+			anonymous_enable=NO		//关闭匿名用户登陆
+
+			#chroot_local_user=YES 或 chroot_local_user=NO
+			allow_writeable_chroot=YES	//限制在home目录后,home目录允许写入,在 chroot_local_user=YES 后追加
+
+			chroot_list_enable=YES
+			chroot_list_file=/etc/vsftpd.chroot_list
+
+			/etc/vsftpd.chroot_list 中添加指定特权用户
+
+		
+		添加用户:
+		
+			# useradd ftpadmin -s /sbin/nologin –d /www(其他目录)
+			# passwd ftpadmin
+		
+			# usermod ftpadmin -s /sbin/nologin –d /www(其他目录)	//修改用户设置
+
+		修改文件权限:
+
+			# mkdir wwww				//创建目录
+			# chown ftpadmin:ftpadmin /www		//改变目录拥有者和用户组
+			# chmod 775 /www			//修改目录权限
+
+2.mysql 
+	
+	port: 3306
+
+	https://dev.mysql.com/downloads/
+
+	# rpm -Uvh http://dev.mysql.com/get/mysql57-community-release-el7-11.noarch.rpm
+	# yum repolist enabled | grep "mysql.*-community.*"	//检查mysql源安装是否成功
+	如mysql版本不对, # vi /etc/yum.repos.d/mysql-community.repo	//修改对应版本的 enabled=1,原来默认的改为0。
+	# yum install -y mysql-community-server 
+	
+	# systemctl start mysqld 或 # service mysqld start
+	# vi /var/log/mysqld.log 	//mysql >= 5.7 查看默认临时密码 root@localhost:后面的, 小于该版本是空密码。
+	# mysql_secure_installation	//配置mysql, 刚开始设置的密码必须符合长度>8，且必须含有数字，小写和大写字母，特殊字符。
+	# mysql -uroot -p
+	mysql> GRANT ALL PRIVILEGES ON *.* TO 'bxymysql'@'%' IDENTIFIED BY '18133193e0' WITH GRANT OPTION;
+	mysql> flush privileges;
+	# systemctl enable mysqld 	//cenos>=7 ,开机自启动
+	
+	# netstat -apn|grep 3306	//显示程序端口占用 ,windows cmd: telnet 47.106.130.11 3306 窗口关闭表示端口不能访问
+
+3.Apache
+	
+	port: 80	
+
+	CentOS 7附带Apache 2.4
+	# yum -y install httpd
+
+	# vi /etc/httpd/conf.d/default.conf	//在 /etc/httpd/conf.d/ 添加 *.conf 文件,添加内容
+		
+		<Directory "/website/www/">
+         		Options FollowSymLinks
+          		AllowOverride All	
+          		Require all granted
+    		</Directory>
+
+		<VirtualHost *:80>
+			ServerName www.linuxidc.com
+			ServerAlias linuxidc.com
+    			DocumentRoot /website/www/linuxidc
+		</VirtualHost>
+	
+	
+	# systemctl start httpd 或 # service httpd start
+	# systemctl enable httpd	//cenos>=7 ,开机自启动
+
+4.php
+
+	http://php.net/downloads.php
+
+5.redis
+
+	查看版本：https://redis.io/download
+
+	$ wget http://download.redis.io/releases/redis-4.0.9.tar.gz
+	$ tar xzf redis-4.0.9.tar.gz
+	$ cd redis-4.0.9
+	$ make
+	
+	Run Redis:
+
+	$ src/redis-server
+
+	# mkdir /usr/local/redis
+	# make install PREFIX=/usr/local/redis
+
+	1.centos <7
+	# cp utils/redis_init_script /etc/init.d/redis
+	# vi /etc/init.d/redis
+
+		在顶部注释后面添加	
+			# chkconfig: - 10 90	
+			# description: Start and Stop redis
+		修改( & 表示后台运行)：
+			EXEC=/usr/local/redis/bin/redis-server
+			CLIEXEC=/usr/local/redis/bin/redis-cli
+			
+			CONF="/usr/local/redis/etc/redis.conf"
+			$EXEC $CONF &	
+
+	# chkconfig --add redis
+	# chkconfig redis on
+	# service redis start
+	
+	2.centos >=7
+	# vi /etc/systemd/system/redis.service
+		
+		[Unit]
+		Description=Redis
+		After=syslog.target network.target
+
+		[Service]
+		Type=forking
+		PIDFile=/var/run/redis_6379.pid
+		ExecStart=/usr/local/redis/bin/redis-server /usr/local/redis/etc/redis.conf --daemonize yes
+		ExecStop=/usr/local/redis/bin/redis-cli -p 6379 shutdown
+		Restart=on-failure
+		RestartSec=42s
+
+		[Install]
+		WantedBy=multi-user.target
+	
+	# systemctl daemon-reload	//刷新配置
+	# systemctl start redis	
+	# systemctl enable redis	
+
+ [php扩展] redis扩展 
+		
+	查看版本: https://github.com/phpredis/phpredis/releases/
+
+	# cd /alidata/server/php/include/php/ext
+	# wget https://github.com/phpredis/phpredis/archive/4.0.0.tar.gz
+	# tar -zxvf 4.0.0.tar.gz
+	# cd phpredis-4.0.0
+	# phpize
+	# ./configure --with-php-config=/alidata/server/php/bin/php-config
+	# make && make install
+	# vi /alidata/server/php/etc/php.ini
+ 	在php.ini最后行加:
+
+	[redis]
+	extension=redis.so
+
+	# /etc/init.d/php-fpm restart
+ 	查看phpinfo()安装redis扩展成功

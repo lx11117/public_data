@@ -1,0 +1,70 @@
+----------------------------------------------------------------------------------
+title: debian环境  version:0.0.1 date:2018-02-08 author:lx_7 tips:系统debian9.3
+----------------------------------------------------------------------------------
+
+安装参考: https://forums.debiancn.org/t/debian/880
+参考文档：https://wiki.archlinux.org/index.php/Fcitx_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)
+
+需要root权限
+
+源码编译：
+	安装编译环境： apt install -y  build-essential gcc g++ libtool automake
+	apt-get install gcc intltool pkg-config libglib2.0-dev libdbus-1-dev libdbus-glib-1-dev libudev-dev libnl-3-dev uuid-dev
+	tar解压压缩文件,进入解压目录：
+		./configure
+
+1.apt换国内源
+
+	备份:
+		cp /etc/apt/sources.list /etc/apt/sources.list.bat
+		
+	修改文件：
+		vi /etc/apt/sources.list
+
+		最前面加上 # 注释掉:
+		#deb cdrom:[Debian GNU/Linux 8 _Jessie_ - Official Snapshot amd64 LIVE/INSTALL Binary 20170723-12:34]/ jessie main
+		
+		添加其它源:
+		deb http://mirrors.163.com/debian/ stretch main non-free contrib
+		deb http://mirrors.163.com/debian/ stretch-updates main non-free contrib
+		deb http://mirrors.163.com/debian/ stretch-backports main non-free contrib
+		deb-src http://mirrors.163.com/debian/ stretch main non-free contrib
+		deb-src http://mirrors.163.com/debian/ stretch-updates main non-free contrib
+		deb-src http://mirrors.163.com/debian/ stretch-backports main non-free contrib
+		deb http://mirrors.163.com/debian-security/ stretch/updates main non-free contrib
+		deb-src http://mirrors.163.com/debian-security/ stretch/updates main non-free contrib
+	
+	更新:
+		apt-get update
+
+2.更换系统语言
+	
+	安装locales：
+		apt-get install locales
+
+	配置编码:
+		dpkg-reconfigure locales
+
+	选择en_US.UTF8, 重启 reboot
+
+3.安装桌面环境
+	
+	gnome:
+		apt-get install gnome
+		reboot
+
+4.安装输入法
+
+	fcitx:
+		apt-get install fcitx fcitx-ui-light fcitx-googlepinyin fcitx-sunpinyin
+		reboot
+
+5.安装网络配置工具
+
+	networkmanager:
+		apt-get install network-manager-gnome network-manager-pptp network-manager-openvpn
+		
+		有线连接 未托管：
+			vi /etc/NetworkManager/NetworkManager.conf
+			修改为此设置managed=true;
+			重启服务 service network-manager restart

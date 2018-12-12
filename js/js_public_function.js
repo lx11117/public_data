@@ -182,6 +182,29 @@
         }
     }
     
+    //设为首页 <a onclick="SetHome(this,window.location)" >设为首页</a>
+    function SetHome(obj, vrl) {
+        //debugger;
+        //谷歌下vrl为数组对象非字符串
+        var homePage='http://'+document.domain;
+        try {
+            obj.style.behavior = 'url(#default#homepage)';
+            obj.setHomePage(homePage);
+        } catch (e) {
+            if (window.netscape) {
+                try {
+                    netscape.security.PrivilegeManager.enablePrivilege("UniversalXPConnect");
+                } catch (e) {
+                    alert("此操作被浏览器拒绝！\n请在浏览器地址栏输入“about:config”并回车\n然后将 [signed.applets.codebase_principal_support]的值设置为'true',双击即可。");
+                }
+                var prefs = Components.classes['@mozilla.org/preferences-service;1'].getService(Components.interfaces.nsIPrefBranch);
+                prefs.setCharPref('browser.startup.homepage', homePage);
+            }else{
+                alert("您的浏览器不支持，请按照下面步骤操作：1.打开浏览器设置。2.点击设置网页。3.输入：" + homePage + "点击确定。");
+            }
+        }
+    }
+    
     /**
      * - chrome为了安全考虑，设计的不支持js操作加入收藏夹，
      * - 火狐23之后开始废止window.sidebar因为不是w3c标注 https://bugzilla.mozilla.org/show_bug.cgi?id=691647
@@ -190,13 +213,13 @@
      * - IE 中typeof window.external.addFavorite 为'unknown' [http://www.xdarui.com/archives/203.html];
      */
     //定义加入收藏夹函数
-    function join_favorite(siteUrl, siteName){  
-        var siteUrl = siteUrl || window.location;
+    // 加入收藏 <a onclick="join_favorite(window.location,document.title)">加入收藏</a>
+    function join_favorite(siteUrl, siteName){
+        var siteUrl = siteUrl || 'http://'+document.domain;
         var siteName = siteName || document.title;
-        
         if(window.external && 'addFavorite' in window.external){ // IE
             window.external.addFavorite(siteUrl, siteName);
-        } else if(window.sidebar && window.sidebar.addPanel) { // Firefox23后被弃用
+        } else if(window.sidebar && window.sidebar.addPanel) { // Firefox23后window.sidebar.addPanel的功能被弃用,如果要使用需要在<a>标签中添加rel="sidebar"才能使用
             window.sidebar.addPanel(siteUrl, siteName);
         } else if(window.opera && window.print) { // rel=sidebar，读取a链接的href，title 注：opera也转战webkit内核了
             this.title = siteName;

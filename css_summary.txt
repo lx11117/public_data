@@ -68,14 +68,18 @@ css参考手册: http://www.css88.com/book/css/
 　　　　　　progid:DXImageTransform.Microsoft.Shadow(color=#CCCCCC, direction=270, strength=6);
 
 	/*标准浏览器*/
-	box-shadow:0px0px6px#CCC;
+	box-shadow:0px 0px 6px #CCC;
 
 5.超出部分显示省略号
 
 	width: 400px;
-      	white-space: nowrap;
+      	white-space: nowrap;/*单行*/
       	overflow: hidden;
       	text-overflow: ellipsis;
+	/*多行*/
+	display: -webkit-box;
+    	-webkit-line-clamp: 2;
+    	-webkit-box-orient: vertical;
 
 6.透明背景
 
@@ -83,3 +87,33 @@ css参考手册: http://www.css88.com/book/css/
 	background:rgba(0,0,0,0.5);
 	filter: progid:DXImageTransform.Microsoft.gradient(startcolorstr=#7F000000,endcolorstr=#7F000000);/* #AARRGGBB  256*0.5 转16进制 获取AA透明值 兼容ie9+ */
 
+7.IE6、7右浮动掉下来
+
+	浮动元素放不动元素前面
+
+8.打印预览颜色失真、背景色无法显示
+
+	-webkit-print-color-adjust: exact;
+
+9.IE z-index 最内层任意值无法超过最外层的值
+
+10.点点点动画
+
+	dot {
+    		display: inline-block; 
+   		height: 1em; line-height: 1;
+   		vertical-align: -.25em;
+    		overflow: hidden;
+	}
+	dot::before {
+    		display: block;
+    		content: '...\A..\A.';
+    		white-space: pre-wrap;
+    		animation: dot 3s infinite step-start both;
+	}
+	@keyframes dot {
+    		33% { transform: translateY(-2em); }
+   		66% { transform: translateY(-1em); }
+	}
+
+	订单提交中<dot>...</dot>

@@ -1,34 +1,34 @@
 <?php
 function filter_jsonStr($document){
     $search = array ("'<script[^>]*?>.*?</script>'si",  // 去掉 javascript
-08                   "'<[\/\!]*?[^<>]*?>'si",           // 去掉 HTML 标记
-09                   "'([\r\n])[\s]+'",                 // 去掉空白字符
-10                   "'&(quot|#34);'i",                 // 替换 HTML 实体
-11                   "'&(amp|#38);'i",
-12                   "'&(lt|#60);'i",
-13                   "'&(gt|#62);'i",
-14                   "'&(nbsp|#160);'i",
-15                   "'&(iexcl|#161);'i",
-16                   "'&(cent|#162);'i",
-17                   "'&(pound|#163);'i",
-18                   "'&(copy|#169);'i",
-19                   "'&#(\d+);'e");                    // 作为 PHP 代码运行
-20  
-21  $replace = array ("",
-22                    "",
-23                    "\\1",
-24                    "\"",
-25                    "&",
-26                    "<",
-27                    ">",
-28                    " ",
-29                    chr(161),
-30                    chr(162),
-31                    chr(163),
-32                    chr(169),
-33                    "chr(\\1)");
-34  
-35  $text = preg_replace ($search, $replace, $document);
+                  "'<[\/\!]*?[^<>]*?>'si",           // 去掉 HTML 标记
+                  "'([\r\n])[\s]+'",                 // 去掉空白字符
+                  "'&(quot|#34);'i",                 // 替换 HTML 实体
+                  "'&(amp|#38);'i",
+                   "'&(lt|#60);'i",
+                   "'&(gt|#62);'i",
+                  "'&(nbsp|#160);'i",
+                  "'&(iexcl|#161);'i",
+                  "'&(cent|#162);'i",
+                   "'&(pound|#163);'i",
+                 "'&(copy|#169);'i",
+                  "'&#(\d+);'e");                    // 作为 PHP 代码运行
+ 
+ $replace = array ("",
+                    "",
+                    "\\1",
+                  "\"",
+                   "&",
+                   "<",
+                   ">",
+                    " ",
+                  chr(161),
+                   chr(162),
+                   chr(163),
+                    chr(169),
+                    "chr(\\1)");
+ 
+  $text = preg_replace ($search, $replace, $document);
     return $text;
 }
 

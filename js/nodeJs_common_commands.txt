@@ -61,6 +61,9 @@ tips：
 	$ npm install -g pm2			#全局安装pm2
 	$ pm2 start app.js --name my-api	#命名进程my-api,独立进程运行
 	$ pm2 start app.js -i 4 --name my-api 	#命名进程my-api,开启四个进程运行
+	$ pm2 save				# 保存当前进程状态
+	$ pm2 startup				# 生成开机自启动服务
+	$ systemctl enable pm2-root		#启用开机自启
 
 安装完成后，在Windows环境下，请打开命令提示符，然后输入node -v，如果安装正常，你应该看到v7.6.0这样的输出：
 

@@ -1,0 +1,305 @@
+===================================================================================================
+ date: 2018-04-09 tips: #-root权限 $-一般用户权限
+===================================================================================================
+
+┌──────────────────┤ 镜像环境及命令简介 ├──────              │────┐                                                │
+              │ 尊敬的用户，为了更好的服务于你们，请您仔细阅读本文档。   │
+              │ 1.镜像目录环境                                           │
+              │ 安装目录及配置文件:/alidata/server                       │
+              │ 日志目录:/alidata/log                                    │
+              │ 网站主目录:/alidata/www                                  │
+              │ 镜像随机密码：/alidata/account.log                       │
+              │ 2.相关命令                                               │
+              │ /etc/init.d/nginx start|stop|restart                     │
+              │ /etc/init.d/php-fpm start|stop|restart                   │
+              │ /etc/init.d/mysqld start|stop|restart                    │
+              │ /etc/init.d/vsftpd start|stop|restart                    │
+              │ switch 
+
+1.查看ftp、mysql账号
+
+	# vi /alidata/account.log
+
+2.设置远程登陆mysql账户
+
+	# mysql -u root -p
+	mysql->GRANT ALL PRIVILEGES ON *.* TO 'suiwan'@'%' IDENTIFIED BY 'c519d82f3c' WITH GRANT OPTION;
+	mysql->flush privileges;	//重新加载数据，使修改生效
+
+[可能问题] ftp无法链接 (vsftp高版本, 设置了只能访问home目录，home目录丢失写入权限)
+
+	# vi /etc/vsftpd/vsftpd.conf
+  	allow_writeable_chroot=YES	//限制在home目录后,home目录允许写入,在 chroot_local_user=YES 后追加
+
+[可能问题] mysql本地无法登陆	
+	
+	ERROR 1045 (28000): Access denied for user 'root'@'localhost'
+
+	# cd /alidata/init
+	# ./initpassword.sh	//执行初始化密码脚本(会初始化mysql和ftp密码, 只初始化一种需要先备份在删掉脚本中不需要的部分)
+
+[可能问题] mysql复制视图出错	
+	
+	mysql 1449 ： The user specified as a definer ('root'@'%') does not exist
+	
+	权限问题，授权 给 root  所有sql 权限:
+	mysql> grant all privileges on *.* to root@"%" identified by ".";
+	mysql> flush privileges;
+
+redis
+
+	查看版本：https://redis.io/download
+
+	$ wget http://download.redis.io/releases/redis-4.0.9.tar.gz
+	$ tar xzf redis-4.0.9.tar.gz
+	$ cd redis-4.0.9
+	$ make
+	
+	Run Redis:
+
+	$ src/redis-server
+
+	# mkdir /usr/local/redis
+	# make install PREFIX=/usr/local/redis
+
+	1.centos <7
+	# cp utils/redis_init_script /etc/init.d/redis
+	# vi /etc/init.d/redis
+
+		在顶部注释后面添加	
+			# chkconfig: - 10 90	
+			# description: Start and Stop redis
+		修改( & 表示后台运行)：
+			EXEC=/usr/local/redis/bin/redis-server
+			CLIEXEC=/usr/local/redis/bin/redis-cli
+			
+			CONF="/usr/local/redis/etc/redis.conf"
+			$EXEC $CONF &	
+
+	# chkconfig --add redis
+	# chkconfig redis on
+	# service redis start
+	
+	2.centos >=7
+	# vi /etc/systemd/system/redis.service
+		
+		[Unit]
+		Description=Redis
+		After=syslog.target network.target
+
+		[Service]
+		Type=forking
+		PIDFile=/var/run/redis_6379.pid
+		ExecStart=/usr/local/redis/bin/redis-server /usr/local/redis/etc/redis.conf --daemonize yes
+		ExecStop=/usr/local/redis/bin/redis-cli -p 6379 shutdown
+		Restart=on-failure
+		RestartSec=42s
+
+		[Install]
+		WantedBy=multi-user.target
+	
+	# systemctl daemon-reload	//刷新配置
+	# systemctl start redis	
+	# systemctl enable redis	
+
+[php扩展] redis扩展 
+		
+	查看版本: https://github.com/phpredis/phpredis/releases/
+
+	# cd /alidata/server/php/include/php/ext
+	# wget https://github.com/phpredis/phpredis/archive/4.0.0.tar.gz
+	# tar -zxvf 4.0.0.tar.gz
+	# cd phpredis-4.0.0
+	# phpize
+	# ./configure --with-php-config=/alidata/server/php/bin/php-config
+	# make && make install
+	# vi /alidata/server/php/etc/php.ini
+ 	在php.ini最后行加:
+
+	[redis]
+	extension=redis.so
+
+	# /etc/init.d/php-fpm restart
+ 	查看phpinfo()安装redis扩展成功
+
+====================================================================================================================
+
+empty server
+
+#lsb_release -a		//查看系统版本信息
+
+mysql 
+	
+	port: 3306
+
+	https://dev.mysql.com/downloads/
+
+	# rpm -Uvh http://dev.mysql.com/get/mysql57-community-release-el7-11.noarch.rpm
+	# yum repolist enabled | grep "mysql.*-community.*"	//检查mysql源安装是否成功
+	如mysql版本不对, # vi /etc/yum.repos.d/mysql-community.repo	//修改对应版本的 enabled=1,原来默认的改为0。
+	# yum install -y mysql-community-server 
+	
+	# systemctl start mysqld 或 # service mysqld start
+	# vi /var/log/mysqld.log 	//mysql >= 5.7 查看默认临时密码 root@localhost:后面的, 小于该版本是空密码。
+	# mysql_secure_installation	//配置mysql, 刚开始设置的密码必须符合长度>8，且必须含有数字，小写和大写字母，特殊字符。
+	# mysql -uroot -p
+	mysql> GRANT ALL PRIVILEGES ON *.* TO 'bxymysql'@'%' IDENTIFIED BY '18133193e0' WITH GRANT OPTION;
+	mysql> flush privileges;
+	# systemctl enable mysqld 	//cenos>=7 ,开机自启动
+	
+	# netstat -apn|grep 3306	//显示程序端口占用 ,windows cmd: telnet 47.106.130.11 3306 窗口关闭表示端口不能访问
+
+Apache
+	
+	port: 80	
+
+	CentOS 7附带Apache 2.4
+	# yum -y install httpd
+
+	# vi /etc/httpd/conf.d/default.conf	//在 /etc/httpd/conf.d/ 添加 *.conf 文件,添加内容
+		
+		<Directory "/website/www/">
+         		Options FollowSymLinks
+          		AllowOverride All	
+          		Require all granted
+    		</Directory>
+
+		<VirtualHost *:80>
+			ServerName www.linuxidc.com
+			ServerAlias linuxidc.com
+    			DocumentRoot /website/www/linuxidc
+		</VirtualHost>
+	
+	
+	# systemctl start httpd 或 # service httpd start
+	# systemctl enable httpd	//cenos>=7 ,开机自启动
+
+php
+
+	http://php.net/downloads.php
+
+vsftpd
+	
+	port: 21
+
+	# yum -y vsftpd
+	# vi /etc/vsftpd/vsftpd.conf		//tips: 按esc键后，/+搜索内容 再按回车搜索, 搜索后按 n 显示下一个 
+		anonymous_enable=NO		//YES 改为 NO ,匿名登陆
+		#chroot_local_user=YES		//限制所有用户在 home 目录
+		allow_writeable_chroot=YES	//限制在home目录后,home目录允许写入,在 chroot_local_user=YES 后追加
+		chroot_list_enable=YES		//去掉前面的 # 号, 开启例外用户列表
+		chroot_list_file=/etc/vsftpd/chroot_list	//去掉前面的 # 号
+
+	# useradd ftpadmin -s /sbin/nologin –d /www(其他目录)
+	# passwd ftpadmin 
+
+	#vi /etc/vsftpd/chroot_list	//文件中添加 ftpadmin 用户,格式一行一个用户名 ,最后按esc键  :wq 保存退出
+
+ 	# systemctl start vsftpd 或 # service vsftpd start
+	# systemctl enable vsftpd 	//cenos>=7 ,开机自启动
+
+====================================================================================================================
+压缩
+zip -r xxx.zip ./*
+忽略某文件夹，则-x选项可以完成
+zip package.zip -x "FileA" -x "FileB" -r .
+
+/*
+ * 文件文件夹查看
+ */
+ls -lR|grep "^d" 显示目录详细信息
+ls | sed "s:^:`pwd`/:"    ---绝对路径
+ls -l * |grep "^-"|wc -l    ---文件个数  
+ls -l * |grep "^d"|wc -l    ---目录个数
+
+FTP安装
+1、 启动VSFTP服务器
+A. cenos下运行:yum  install  vsftpd
+B. 登录Linux主机后，运行命令：”service vsftpd start”
+C. 要让FTP每次开机自动启动，运行命令:  “chkconfig --level 35 vsftpd on”
+
+==================================================================================================
+
+
+==================================================================================================
+
+关闭匿名登录功能：
+
+vi /etc/vsftpd/vsftpd.conf
+
+将配置文件中”anonymous_enable=YES “改为 “anonymous_enable=NO”
+
+vsftpd.conf:
+
+chroot_local_user=YES	//设置所有用户都不能离开home目录
+allow_writeable_chroot=YES	//限制在home目录后,home目录允许写入,在 chroot_local_user=YES 后追加
+
+对个别用户开启特权:
+
+	chroot_list_enable=YES
+	chroot_list_file=/etc/vsftpd.chroot_list
+
+	/etc/vsftpd.chroot_list 中添加特权用户，格式为每个用户一行，在此文件里的用户不受权限约束。
+
+ftp用户策略允许登录ftp的系统用户:
+
+	在userlist_enable=YES文件后面添加
+		userlist_deny=NO
+		userlist_file=/etc/vsftpd/user_list
+
+	只有user_list中存在的用户才能登录系统,格式为每个用户一行
+
+=================================================================================================
+
+useradd ftpadmin
+passwd ftpadmin
+
+新建：
+useradd ftpadmin -s /sbin/nologin –d /www(其他目录)
+修改：
+usermod ftpadmin -s /sbin/nologin –d /www(其他目录)
+
+# mkdir wwww	//创建目录
+# chown ftpadmin:ftpadmin /www	//改变目录拥有者和用户组
+
+=================================================================================================
+安装mysql:
+
+	tips: centos7 yum 源没有 mysql 只有 mariadb
+
+	参考：https://blog.csdn.net/u014481096/article/details/77369630
+	
+	1.# rpm -Uvh http://dev.mysql.com/get/mysql-community-release-el7-5.noarch.rpm
+	2.# yum install mysql-community-server
+	3.# systemctl start mysqld 或 # service mysqld start
+	4.# mysql_secure_installation	//配置mysql
+	5.# systemctl enable mysqld 	//开机自启动
+=================================================================================================
+1、mysql -uroot -p（密码）
+2、创建用户用来远程连接
+GRANT ALL PRIVILEGES ON *.* TO 'bxymysql'@'%' IDENTIFIED BY '18133193e0' WITH GRANT OPTION;
+flush privileges;命令立即生效
+3、查询数据库的用户
+SELECT DISTINCT CONCAT('User: ''',user,'''@''',host,''';') AS query FROM mysql.user;
+SELECT User, Host, Password FROM mysql.user;
+4、
+然后打开vim  /etc/mysql/my.cnf
+
+将bind-address    = 127.0.0.1
+
+设置成bind-address    = 0.0.0.0（设备地址）
+
+重新启动（命令如下）：
+
+/etc/init.d/mysql stop
+
+/etc/init.d/mysql start
+
+6、查看端口号，在MYSQL里面
+show global variables like 'port';
+
+cat /etc/passwd 
+
+//解决办法
+（1 ）该表：在本机登入 MySQL 后，更改 “mysql” 数据库里的 “user” 表里的 “host” 项，从 ”localhost” 改为 '%'。
+（2 ）授权法：为 MySQL 创建一个 远程连接的用户

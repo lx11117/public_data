@@ -127,7 +127,9 @@ a: varname	#变量是当前函数的一个参数
 		execute 命令只能用来执行冒号命令
 		normal 命令可以用来执行普通模式命令。然而，它的参数只能是按表面意义解释的命令字符，不能是表达式。
 		如果你不想执行字符串，而想执行它作为表达式计算的结果，可以用 eval() 函数。
-
+		
+		let dd = 'ddfdsf'
+		exe 's/index/'.dd.'/ge'
 		execute "normal " . normal_commands
 		let optname = "path"
         	let optval = eval('&' . optname)

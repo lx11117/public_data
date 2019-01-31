@@ -1,5 +1,5 @@
 ---------------------------------------------------------------------------------------
-title:html和css编码规范 date: 2017-07-14 version: 0.0.0 author: lx_7
+title:html和css编码规范 date: 2018-12-15 version: 0.0.1 author: lx_7
 ---------------------------------------------------------------------------------------
 
 tips：	
@@ -19,3 +19,14 @@ tips：
 		
 	      https://github.com/ecomfe/spec ( 百度EFE )
 
+css命名规范:
+	
+	BEM:	区块 元素 修饰符
+		
+		eg: .stick-man__head--big {}
+		
+	和JavaScript关联的css名称:
+
+		js-: <div class="site-navigation js-site-navigation"></div>
+		
+		rel属性: <div class="site-navigation" rel="js-site-navigation"></div>
